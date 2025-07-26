@@ -9,17 +9,17 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import controlador.ControladorActividades;
+import controlador.ControladorAsistentes;
 import modelo.Asistente;
 
 public class DetalleAsistenteView extends JFrame {
-
     private JLabel lblNombre, lblApellidos, lblEdad, lblGenero, lblDireccion, lblTelefono, lblTelefonoEmergencia;
     private JTable tblActividades;
-    private JButton btnCerrar;
+    private JButton btnEditar, btnEliminar, btnCerrar;
     private Asistente asistente;
 
     public DetalleAsistenteView(String idAsistente) {
-        controlador.ControladorAsistentes ctrlAsistentes = new controlador.ControladorAsistentes();
+        ControladorAsistentes ctrlAsistentes = new ControladorAsistentes();
         this.asistente = ctrlAsistentes.buscarAsistentePorId(idAsistente);
 
         if (asistente == null) {
@@ -44,31 +44,31 @@ public class DetalleAsistenteView extends JFrame {
 
         JPanel pnlInfo = new JPanel(new GridLayout(7, 2, 5, 5));
         pnlInfo.setBorder(BorderFactory.createTitledBorder("Información Personal"));
-
+        
         pnlInfo.add(new JLabel("Nombre:"));
         lblNombre = new JLabel();
         pnlInfo.add(lblNombre);
-
+        
         pnlInfo.add(new JLabel("Apellidos:"));
         lblApellidos = new JLabel();
         pnlInfo.add(lblApellidos);
-
+        
         pnlInfo.add(new JLabel("Edad:"));
         lblEdad = new JLabel();
         pnlInfo.add(lblEdad);
-
+        
         pnlInfo.add(new JLabel("Género:"));
         lblGenero = new JLabel();
         pnlInfo.add(lblGenero);
-
+        
         pnlInfo.add(new JLabel("Dirección:"));
         lblDireccion = new JLabel();
         pnlInfo.add(lblDireccion);
-
+        
         pnlInfo.add(new JLabel("Teléfono:"));
         lblTelefono = new JLabel();
         pnlInfo.add(lblTelefono);
-
+        
         pnlInfo.add(new JLabel("Teléfono Emergencia:"));
         lblTelefonoEmergencia = new JLabel();
         pnlInfo.add(lblTelefonoEmergencia);
@@ -77,27 +77,33 @@ public class DetalleAsistenteView extends JFrame {
 
         JPanel pnlActividades = new JPanel(new BorderLayout());
         pnlActividades.setBorder(BorderFactory.createTitledBorder("Actividades Inscritas"));
-
+        
         tblActividades = new JTable();
         JScrollPane scrollActividades = new JScrollPane(tblActividades);
         pnlActividades.add(scrollActividades, BorderLayout.CENTER);
-
+        
         ControladorActividades ctrlActividades = new ControladorActividades();
         double total = ctrlActividades.calcularMensualidadAsistente(asistente.getId());
-
         JLabel lblTotal = new JLabel("Total mensualidad: $" + total, SwingConstants.RIGHT);
         pnlActividades.add(lblTotal, BorderLayout.SOUTH);
 
         panel.add(pnlActividades, BorderLayout.CENTER);
 
+        JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
+        btnEditar = new JButton("Editar");
+        btnEditar.addActionListener(e -> editarAsistente());
+        pnlBotones.add(btnEditar);
+        
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.addActionListener(e -> eliminarAsistente());
+        pnlBotones.add(btnEliminar);
+        
         btnCerrar = new JButton("Cerrar");
-        btnCerrar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dispose();
-            }
-        });
-        panel.add(btnCerrar, BorderLayout.SOUTH);
+        btnCerrar.addActionListener(e -> dispose());
+        pnlBotones.add(btnCerrar);
 
+        panel.add(pnlBotones, BorderLayout.SOUTH);
         add(panel);
     }
 
@@ -132,7 +138,32 @@ public class DetalleAsistenteView extends JFrame {
                 "$" + inscripcion.getCostoTotal()
             });
         }
-
         tblActividades.setModel(model);
+    }
+
+    private void editarAsistente() {
+        dispose();
+        new EditarAsistenteView(asistente.getId()).setVisible(true);
+    }
+
+    private void eliminarAsistente() {
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro que desea eliminar este asistente?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION);
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            ControladorAsistentes ctrl = new ControladorAsistentes();
+            if (ctrl.eliminarAsistente(asistente.getId())) {
+                JOptionPane.showMessageDialog(this, 
+                    "Asistente eliminado correctamente",
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                    "Error al eliminar asistente",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

@@ -6,13 +6,13 @@
 package controlador;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import modelo.Asistente;
 import modelo.Gimnasio;
 import modelo.GeneradorID;
 
 public class ControladorAsistentes {
-
     private Gimnasio gimnasio;
 
     public ControladorAsistentes() {
@@ -20,11 +20,11 @@ public class ControladorAsistentes {
     }
 
     public boolean registrarAsistente(String nombre, String primerApellido, String segundoApellido,
-            int edad, String genero, String direccion, String telefono,
-            String telefonoEmergencia) {
+                                    int edad, String genero, String direccion, String telefono,
+                                    String telefonoEmergencia) {
         String id = GeneradorID.generarIDAsistente();
         Asistente nuevoAsistente = new Asistente(id, nombre, primerApellido, segundoApellido,
-                edad, genero, direccion, telefono, telefonoEmergencia);
+                                                edad, genero, direccion, telefono, telefonoEmergencia);
         return gimnasio.agregarAsistente(nuevoAsistente);
     }
 
@@ -44,11 +44,10 @@ public class ControladorAsistentes {
     public List<Asistente> buscarAsistentesPorNombre(String nombre) {
         List<Asistente> resultados = new ArrayList<>();
         String busqueda = nombre.toLowerCase();
-
         for (Asistente a : gimnasio.getAsistentes()) {
             if (a.getNombre().toLowerCase().contains(busqueda)
-                    || a.getPrimerApellido().toLowerCase().contains(busqueda)
-                    || a.getSegundoApellido().toLowerCase().contains(busqueda)) {
+                || a.getPrimerApellido().toLowerCase().contains(busqueda)
+                || a.getSegundoApellido().toLowerCase().contains(busqueda)) {
                 resultados.add(a);
             }
         }
@@ -56,6 +55,10 @@ public class ControladorAsistentes {
     }
 
     public boolean actualizarAsistente(Asistente asistenteActualizado) {
+        if (asistenteActualizado == null) {
+            return false;
+        }
+        
         List<Asistente> asistentes = gimnasio.getAsistentes();
         for (int i = 0; i < asistentes.size(); i++) {
             if (asistentes.get(i).getId().equals(asistenteActualizado.getId())) {
@@ -67,9 +70,15 @@ public class ControladorAsistentes {
     }
 
     public boolean eliminarAsistente(String id) {
-        for (Asistente a : gimnasio.getAsistentes()) {
+        if (id == null || id.isEmpty()) {
+            return false;
+        }
+        
+        Iterator<Asistente> iterator = gimnasio.getAsistentes().iterator();
+        while (iterator.hasNext()) {
+            Asistente a = iterator.next();
             if (a.getId().equals(id)) {
-                gimnasio.getAsistentes().remove(a);
+                iterator.remove();
                 return true;
             }
         }

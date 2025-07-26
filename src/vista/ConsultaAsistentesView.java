@@ -9,14 +9,12 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import controlador.ControladorAsistentes;
 
 public class ConsultaAsistentesView extends JFrame {
-
     private JTable tblAsistentes;
     private JTextField txtBusqueda;
-    private JButton btnBuscar, btnDetalles, btnSalir;
+    private JButton btnBuscar, btnDetalles, btnEditar, btnEliminar, btnSalir;
     private ControladorAsistentes ctrlAsistentes;
 
     public ConsultaAsistentesView() {
@@ -38,14 +36,9 @@ public class ConsultaAsistentesView extends JFrame {
         pnlBusqueda.add(new JLabel("Buscar por nombre:"));
         txtBusqueda = new JTextField(20);
         pnlBusqueda.add(txtBusqueda);
-
+        
         btnBuscar = new JButton("Buscar");
-        btnBuscar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                buscarAsistentes();
-            }
-        });
+        btnBuscar.addActionListener(e -> buscarAsistentes());
         pnlBusqueda.add(btnBuscar);
 
         panel.add(pnlBusqueda, BorderLayout.NORTH);
@@ -55,27 +48,24 @@ public class ConsultaAsistentesView extends JFrame {
         panel.add(scrollAsistentes, BorderLayout.CENTER);
 
         JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-
+        
         btnDetalles = new JButton("Ver Detalles");
-        btnDetalles.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                mostrarDetalles(evt);
-            }
-        });
+        btnDetalles.addActionListener(this::mostrarDetalles);
         pnlBotones.add(btnDetalles);
-
+        
+        btnEditar = new JButton("Editar");
+        btnEditar.addActionListener(this::editarAsistente);
+        pnlBotones.add(btnEditar);
+        
+        btnEliminar = new JButton("Eliminar");
+        btnEliminar.addActionListener(this::eliminarAsistente);
+        pnlBotones.add(btnEliminar);
+        
         btnSalir = new JButton("Salir");
-        btnSalir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
+        btnSalir.addActionListener(e -> dispose());
         pnlBotones.add(btnSalir);
 
         panel.add(pnlBotones, BorderLayout.SOUTH);
-
         add(panel);
     }
 
@@ -96,7 +86,6 @@ public class ConsultaAsistentesView extends JFrame {
                 asistente.getTelefono()
             });
         }
-
         tblAsistentes.setModel(model);
     }
 
@@ -120,11 +109,49 @@ public class ConsultaAsistentesView extends JFrame {
         int filaSeleccionada = tblAsistentes.getSelectedRow();
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
         new DetalleAsistenteView(idAsistente).setVisible(true);
+    }
+
+    private void editarAsistente(ActionEvent evt) {
+        int filaSeleccionada = tblAsistentes.getSelectedRow();
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
+        new EditarAsistenteView(idAsistente).setVisible(true);
+        cargarTodosAsistentes();
+    }
+
+    private void eliminarAsistente(ActionEvent evt) {
+        int filaSeleccionada = tblAsistentes.getSelectedRow();
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
+                "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro que desea eliminar este asistente?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION);
+        
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            if (ctrlAsistentes.eliminarAsistente(idAsistente)) {
+                JOptionPane.showMessageDialog(this, "Asistente eliminado correctamente",
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                cargarTodosAsistentes();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar asistente",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }
