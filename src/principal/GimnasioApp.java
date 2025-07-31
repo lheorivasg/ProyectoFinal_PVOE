@@ -7,10 +7,9 @@ package principal;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import vista.LoginView;
+import vista.MainContainer;
 
 public class GimnasioApp {
-
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -18,11 +17,8 @@ public class GimnasioApp {
             System.err.println("Error al configurar apariencia: " + e.getMessage());
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new LoginView().setVisible(true);
-            }
+        SwingUtilities.invokeLater(() -> {
+            MainContainer.getInstance().setVisible(true);
         });
     }
 }

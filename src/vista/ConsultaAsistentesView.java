@@ -11,10 +11,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import controlador.ControladorAsistentes;
 
-public class ConsultaAsistentesView extends JFrame {
+public class ConsultaAsistentesView {
+    private JPanel panel;
     private JTable tblAsistentes;
     private JTextField txtBusqueda;
-    private JButton btnBuscar, btnDetalles, btnEditar, btnEliminar, btnSalir;
+    private JButton btnBuscar, btnDetalles, btnEditar, btnEliminar, btnRegresar;
     private ControladorAsistentes ctrlAsistentes;
 
     public ConsultaAsistentesView() {
@@ -22,14 +23,13 @@ public class ConsultaAsistentesView extends JFrame {
         initComponents();
         cargarTodosAsistentes();
     }
+    
+    public JPanel getPanel() {
+        return panel;
+    }
 
     private void initComponents() {
-        setTitle("Gimnasio Deportivo - Azcapotzalco: Consulta de Asistentes");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 500);
-        setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel pnlBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
@@ -61,12 +61,11 @@ public class ConsultaAsistentesView extends JFrame {
         btnEliminar.addActionListener(this::eliminarAsistente);
         pnlBotones.add(btnEliminar);
         
-        btnSalir = new JButton("Salir");
-        btnSalir.addActionListener(e -> dispose());
-        pnlBotones.add(btnSalir);
+        btnRegresar = new JButton("Regresar");
+        btnRegresar.addActionListener(e -> MainContainer.getInstance().showMainMenu());
+        pnlBotones.add(btnRegresar);
 
         panel.add(pnlBotones, BorderLayout.SOUTH);
-        add(panel);
     }
 
     private void cargarTodosAsistentes() {
@@ -108,48 +107,47 @@ public class ConsultaAsistentesView extends JFrame {
     private void mostrarDetalles(ActionEvent evt) {
         int filaSeleccionada = tblAsistentes.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
+            JOptionPane.showMessageDialog(panel, "Seleccione un asistente primero",
                 "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
-        new DetalleAsistenteView(idAsistente).setVisible(true);
+        MainContainer.getInstance().showDetalleAsistente(idAsistente);
     }
 
     private void editarAsistente(ActionEvent evt) {
         int filaSeleccionada = tblAsistentes.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
+            JOptionPane.showMessageDialog(panel, "Seleccione un asistente primero",
                 "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
-        new EditarAsistenteView(idAsistente).setVisible(true);
-        cargarTodosAsistentes();
+        MainContainer.getInstance().showEditarAsistente(idAsistente);
     }
 
     private void eliminarAsistente(ActionEvent evt) {
         int filaSeleccionada = tblAsistentes.getSelectedRow();
         if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un asistente primero",
+            JOptionPane.showMessageDialog(panel, "Seleccione un asistente primero",
                 "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         String idAsistente = tblAsistentes.getValueAt(filaSeleccionada, 0).toString();
-        int confirmacion = JOptionPane.showConfirmDialog(this,
+        int confirmacion = JOptionPane.showConfirmDialog(panel,
             "¿Está seguro que desea eliminar este asistente?",
             "Confirmar eliminación",
             JOptionPane.YES_NO_OPTION);
         
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (ctrlAsistentes.eliminarAsistente(idAsistente)) {
-                JOptionPane.showMessageDialog(this, "Asistente eliminado correctamente",
+                JOptionPane.showMessageDialog(panel, "Asistente eliminado correctamente",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 cargarTodosAsistentes();
             } else {
-                JOptionPane.showMessageDialog(this, "Error al eliminar asistente",
+                JOptionPane.showMessageDialog(panel, "Error al eliminar asistente",
                     "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

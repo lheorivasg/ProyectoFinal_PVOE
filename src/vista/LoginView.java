@@ -6,67 +6,91 @@
 package vista;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import controlador.ControladorUsuarios;
 
-public class LoginView extends JFrame {
-
+public class LoginView {
+    private JPanel panel;
     private JTextField txtUsuario;
     private JPasswordField txtPassword;
-    private JButton btnLogin;
-    private ControladorUsuarios ctrlUsuarios;
-
+    
     public LoginView() {
-        ctrlUsuarios = new ControladorUsuarios();
         initComponents();
     }
-
-    private void initComponents() {
-        setTitle("Gimnasio Deportivo - Azcapotzalco: Login");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(350, 200);
-        setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel lblUsuario = new JLabel("Usuario:");
-        txtUsuario = new JTextField(15);
-
-        JLabel lblPassword = new JLabel("Contraseña:");
-        txtPassword = new JPasswordField(15);
-
-        btnLogin = new JButton("Ingresar");
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                loginAction(evt);
-            }
-        });
-
-        panel.add(lblUsuario);
-        panel.add(txtUsuario);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(lblPassword);
-        panel.add(txtPassword);
-        panel.add(Box.createVerticalStrut(20));
-        panel.add(btnLogin);
-
-        add(panel);
+    
+    public JPanel getPanel() {
+        return panel;
     }
+    
+    private void initComponents() {
+        panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
 
+        // Título
+        JLabel lblTitulo = new JLabel("GIMNASIO DEPORTIVO - AZCAPOTZALCO", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 16));
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblTitulo);
+        
+        panel.add(Box.createVerticalStrut(20));
+        
+        JLabel lblSubtitulo = new JLabel("INICIO DE SESIÓN", SwingConstants.CENTER);
+        lblSubtitulo.setFont(new Font("Tahoma", Font.BOLD, 14));
+        lblSubtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblSubtitulo);
+        
+        panel.add(Box.createVerticalStrut(30));
+
+        // Campo Usuario
+        JPanel pnlUsuario = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblUsuario = new JLabel("Usuario:");
+        lblUsuario.setPreferredSize(new Dimension(100, 20));
+        pnlUsuario.add(lblUsuario);
+        
+        txtUsuario = new JTextField();
+        txtUsuario.setPreferredSize(new Dimension(200, 30));
+        pnlUsuario.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlUsuario.add(txtUsuario);
+        panel.add(pnlUsuario);
+        
+        panel.add(Box.createVerticalStrut(15));
+
+        // Campo Contraseña
+        JPanel pnlPassword = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel lblPassword = new JLabel("Contraseña:");
+        lblPassword.setPreferredSize(new Dimension(100, 20));
+        pnlPassword.add(lblPassword);
+        
+        txtPassword = new JPasswordField();
+        txtPassword.setPreferredSize(new Dimension(200, 30));
+        pnlPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlPassword.add(txtPassword);
+        panel.add(pnlPassword);
+        
+        panel.add(Box.createVerticalStrut(30));
+
+        // Botón Ingresar
+        JButton btnLogin = new JButton("Ingresar");
+        btnLogin.setPreferredSize(new Dimension(120, 35));
+        btnLogin.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnLogin.addActionListener(this::loginAction);
+        panel.add(btnLogin);
+    }
+    
     private void loginAction(ActionEvent evt) {
         String usuario = txtUsuario.getText();
         String password = new String(txtPassword.getPassword());
-
-        if (ctrlUsuarios.autenticarUsuario(usuario, password) != null) {
-            new MainView().setVisible(true);
-            this.dispose();
+        
+        if (new controlador.ControladorUsuarios().autenticarUsuario(usuario, password) != null) {
+            MainContainer.getInstance().showMainMenu();
         } else {
-            JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos",
-                    "Error de autenticación", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(panel, 
+                "Usuario o contraseña incorrectos",
+                "Error de autenticación", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 }

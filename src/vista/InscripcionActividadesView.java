@@ -6,143 +6,151 @@
 package vista;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import controlador.ControladorActividades;
 import controlador.ControladorAsistentes;
+import modelo.Asistente;
+import modelo.Actividad;
 
-public class InscripcionActividadesView extends JFrame {
-
-    private JTable tblAsistentes;
-    private JTable tblActividades;
+public class InscripcionActividadesView {
+    private JPanel panel;
+    private JComboBox<Asistente> cmbAsistentes;
+    private JComboBox<Actividad> cmbActividades;
     private JCheckBox chkEquipo;
-    private JButton btnInscribir, btnCancelar;
-    private ControladorAsistentes ctrlAsistentes;
+    private JButton btnInscribir, btnRegresar;
     private ControladorActividades ctrlActividades;
+    private ControladorAsistentes ctrlAsistentes;
 
     public InscripcionActividadesView() {
-        ctrlAsistentes = new ControladorAsistentes();
         ctrlActividades = new ControladorActividades();
+        ctrlAsistentes = new ControladorAsistentes();
         initComponents();
         cargarAsistentes();
         cargarActividades();
     }
+    
+    public JPanel getPanel() {
+        return panel;
+    }
 
     private void initComponents() {
-        setTitle("Gimnasio Deportivo - Azcapotzalco: Inscripción a Actividades");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
+        panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel pnlFormulario = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JPanel pnlAsistentes = new JPanel(new BorderLayout());
-        pnlAsistentes.setBorder(BorderFactory.createTitledBorder("Asistentes"));
+        // Asistente
+        gbc.gridx = 0; gbc.gridy = 0;
+        pnlFormulario.add(new JLabel("Asistente:"), gbc);
+        
+        gbc.gridx = 1;
+        cmbAsistentes = new JComboBox<>();
+        cmbAsistentes.setPreferredSize(new Dimension(300, 25));
+        pnlFormulario.add(cmbAsistentes, gbc);
 
-        tblAsistentes = new JTable();
-        JScrollPane scrollAsistentes = new JScrollPane(tblAsistentes);
-        pnlAsistentes.add(scrollAsistentes, BorderLayout.CENTER);
+        // Actividad
+        gbc.gridx = 0; gbc.gridy = 1;
+        pnlFormulario.add(new JLabel("Actividad:"), gbc);
+        
+        gbc.gridx = 1;
+        cmbActividades = new JComboBox<>();
+        cmbActividades.setPreferredSize(new Dimension(300, 25));
+        pnlFormulario.add(cmbActividades, gbc);
 
-        JPanel pnlActividades = new JPanel(new BorderLayout());
-        pnlActividades.setBorder(BorderFactory.createTitledBorder("Actividades Disponibles"));
+        // Equipo
+        gbc.gridx = 0; gbc.gridy = 2;
+        pnlFormulario.add(new JLabel("¿Adquirir equipo?"), gbc);
+        
+        gbc.gridx = 1;
+        chkEquipo = new JCheckBox();
+        pnlFormulario.add(chkEquipo, gbc);
 
-        tblActividades = new JTable();
-        JScrollPane scrollActividades = new JScrollPane(tblActividades);
-        pnlActividades.add(scrollActividades, BorderLayout.CENTER);
+        panel.add(pnlFormulario, BorderLayout.CENTER);
 
-        JPanel pnlOpciones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        chkEquipo = new JCheckBox("Adquirir equipo para la actividad");
-        pnlOpciones.add(chkEquipo);
-
+        // Botones
+        JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         btnInscribir = new JButton("Inscribir");
-        btnInscribir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                inscribirAsistente(evt);
-            }
-        });
-        pnlOpciones.add(btnInscribir);
+        btnInscribir.setPreferredSize(new Dimension(120, 30));
+        btnInscribir.addActionListener(this::inscribirAsistente);
+        
+        btnRegresar = new JButton("Regresar");
+        btnRegresar.setPreferredSize(new Dimension(120, 30));
+        btnRegresar.addActionListener(e -> MainContainer.getInstance().showMainMenu());
+        
+        pnlBotones.add(btnInscribir);
+        pnlBotones.add(btnRegresar);
 
-        btnCancelar = new JButton("Cancelar");
-        btnCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-        pnlOpciones.add(btnCancelar);
-
-        panel.add(pnlAsistentes, BorderLayout.WEST);
-        panel.add(pnlActividades, BorderLayout.CENTER);
-        panel.add(pnlOpciones, BorderLayout.SOUTH);
-
-        add(panel);
+        panel.add(pnlBotones, BorderLayout.SOUTH);
     }
 
     private void cargarAsistentes() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Nombre");
-        model.addColumn("Apellidos");
-
-        for (modelo.Asistente asistente : ctrlAsistentes.obtenerTodosAsistentes()) {
-            model.addRow(new Object[]{
-                asistente.getId(),
-                asistente.getNombre(),
-                asistente.getPrimerApellido() + " " + asistente.getSegundoApellido()
-            });
+        cmbAsistentes.removeAllItems();
+        DefaultComboBoxModel<Asistente> model = new DefaultComboBoxModel<>();
+        for (Asistente asistente : ctrlAsistentes.obtenerTodosAsistentes()) {
+            model.addElement(asistente);
         }
-
-        tblAsistentes.setModel(model);
+        cmbAsistentes.setModel(model);
+        cmbAsistentes.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Asistente) {
+                    Asistente a = (Asistente) value;
+                    setText(a.getNombre() + " " + a.getPrimerApellido() + " (" + a.getId() + ")");
+                }
+                return this;
+            }
+        });
     }
 
     private void cargarActividades() {
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("ID");
-        model.addColumn("Actividad");
-        model.addColumn("Horario");
-        model.addColumn("Instructor");
-        model.addColumn("Costo");
-        model.addColumn("Cupo");
-
-        for (modelo.Actividad actividad : ctrlActividades.obtenerTodasActividades()) {
-            model.addRow(new Object[]{
-                actividad.getId(),
-                actividad.getNombre(),
-                actividad.getHorario(),
-                actividad.getInstructor(),
-                "$" + actividad.getCosto(),
-                actividad.getCupoDisponible() + "/" + (actividad.getCupoDisponible() + 10) // Ejemplo
-            });
+        cmbActividades.removeAllItems();
+        DefaultComboBoxModel<Actividad> model = new DefaultComboBoxModel<>();
+        for (Actividad actividad : ctrlActividades.obtenerTodasActividades()) {
+            model.addElement(actividad);
         }
-
-        tblActividades.setModel(model);
+        cmbActividades.setModel(model);
+        cmbActividades.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Actividad) {
+                    Actividad a = (Actividad) value;
+                    setText(a.getNombre() + " - " + a.getHorario() + " (" + a.getCupoDisponible() + " cupos)");
+                }
+                return this;
+            }
+        });
     }
 
     private void inscribirAsistente(ActionEvent evt) {
-        int filaAsistente = tblAsistentes.getSelectedRow();
-        int filaActividad = tblActividades.getSelectedRow();
-
-        if (filaAsistente == -1 || filaActividad == -1) {
-            JOptionPane.showMessageDialog(this, "Debe seleccionar un asistente y una actividad",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+        Asistente asistente = (Asistente) cmbAsistentes.getSelectedItem();
+        Actividad actividad = (Actividad) cmbActividades.getSelectedItem();
+        
+        if (asistente == null || actividad == null) {
+            JOptionPane.showMessageDialog(panel, "Seleccione un asistente y una actividad", 
+                "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        String idAsistente = tblAsistentes.getValueAt(filaAsistente, 0).toString();
-        String idActividad = tblActividades.getValueAt(filaActividad, 0).toString();
-        boolean equipoAdquirido = chkEquipo.isSelected();
-
-        if (ctrlActividades.inscribirAsistenteEnActividad(idAsistente, idActividad, equipoAdquirido)) {
-            JOptionPane.showMessageDialog(this, "Inscripción realizada con éxito",
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            cargarActividades(); // Actualizar cupos
+        
+        boolean exito = ctrlActividades.inscribirAsistenteEnActividad(
+            asistente.getId(), 
+            actividad.getId(), 
+            chkEquipo.isSelected()
+        );
+        
+        if (exito) {
+            JOptionPane.showMessageDialog(panel, "Inscripción realizada con éxito", 
+                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            cargarActividades(); // Actualizar cupos disponibles
         } else {
-            JOptionPane.showMessageDialog(this, "Error al realizar la inscripción",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(panel, "Error al realizar la inscripción", 
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

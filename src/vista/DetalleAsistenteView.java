@@ -12,34 +12,33 @@ import controlador.ControladorActividades;
 import controlador.ControladorAsistentes;
 import modelo.Asistente;
 
-public class DetalleAsistenteView extends JFrame {
+public class DetalleAsistenteView {
+    private JPanel panel;
     private JLabel lblNombre, lblApellidos, lblEdad, lblGenero, lblDireccion, lblTelefono, lblTelefonoEmergencia;
     private JTable tblActividades;
-    private JButton btnEditar, btnEliminar, btnCerrar;
+    private JButton btnEditar, btnEliminar, btnRegresar;
     private Asistente asistente;
 
     public DetalleAsistenteView(String idAsistente) {
-        ControladorAsistentes ctrlAsistentes = new ControladorAsistentes();
+        controlador.ControladorAsistentes ctrlAsistentes = new controlador.ControladorAsistentes();
         this.asistente = ctrlAsistentes.buscarAsistentePorId(idAsistente);
-
+        
         if (asistente == null) {
             JOptionPane.showMessageDialog(null, "Asistente no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
-            dispose();
             return;
         }
-
+        
         initComponents();
         cargarDatosAsistente();
         cargarActividades();
     }
+    
+    public JPanel getPanel() {
+        return panel;
+    }
 
     private void initComponents() {
-        setTitle("Gimnasio Deportivo - Azcapotzalco: Detalle de Asistente");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(700, 500);
-        setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel pnlInfo = new JPanel(new GridLayout(7, 2, 5, 5));
@@ -99,14 +98,14 @@ public class DetalleAsistenteView extends JFrame {
         btnEliminar.addActionListener(e -> eliminarAsistente());
         pnlBotones.add(btnEliminar);
         
-        btnCerrar = new JButton("Cerrar");
-        btnCerrar.addActionListener(e -> dispose());
-        pnlBotones.add(btnCerrar);
+        btnRegresar = new JButton("Regresar");
+        btnRegresar.addActionListener(e -> MainContainer.getInstance().showConsultaAsistentes());
+        pnlBotones.add(btnRegresar);
 
         panel.add(pnlBotones, BorderLayout.SOUTH);
-        add(panel);
     }
 
+    // ... (métodos cargarDatosAsistente y cargarActividades permanecen igual)
     private void cargarDatosAsistente() {
         lblNombre.setText(asistente.getNombre());
         lblApellidos.setText(asistente.getPrimerApellido() + " " + asistente.getSegundoApellido());
@@ -142,12 +141,11 @@ public class DetalleAsistenteView extends JFrame {
     }
 
     private void editarAsistente() {
-        dispose();
-        new EditarAsistenteView(asistente.getId()).setVisible(true);
+        MainContainer.getInstance().showEditarAsistente(asistente.getId());
     }
 
     private void eliminarAsistente() {
-        int confirmacion = JOptionPane.showConfirmDialog(this,
+        int confirmacion = JOptionPane.showConfirmDialog(panel,
             "¿Está seguro que desea eliminar este asistente?",
             "Confirmar eliminación",
             JOptionPane.YES_NO_OPTION);
@@ -155,12 +153,12 @@ public class DetalleAsistenteView extends JFrame {
         if (confirmacion == JOptionPane.YES_OPTION) {
             ControladorAsistentes ctrl = new ControladorAsistentes();
             if (ctrl.eliminarAsistente(asistente.getId())) {
-                JOptionPane.showMessageDialog(this, 
+                JOptionPane.showMessageDialog(panel, 
                     "Asistente eliminado correctamente",
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
+                MainContainer.getInstance().showConsultaAsistentes();
             } else {
-                JOptionPane.showMessageDialog(this,
+                JOptionPane.showMessageDialog(panel,
                     "Error al eliminar asistente",
                     "Error", JOptionPane.ERROR_MESSAGE);
             }

@@ -6,14 +6,15 @@
 package vista;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import controlador.ControladorAsistentes;
 import controlador.ControladorPersistencia;
 import controlador.ControladorPrincipal;
 
-public class RegistroAsistentesView extends JFrame {
+public class RegistroAsistentesView {
+    private JPanel panel;
     private JTextField txtNombre, txtPrimerApellido, txtSegundoApellido;
     private JTextField txtEdad, txtDireccion, txtTelefono, txtTelefonoEmergencia;
     private JComboBox<String> cmbGenero;
@@ -24,144 +25,171 @@ public class RegistroAsistentesView extends JFrame {
         ctrlAsistentes = new ControladorAsistentes();
         initComponents();
     }
+    
+    public JPanel getPanel() {
+        return panel;
+    }
 
     private void initComponents() {
-        setTitle("Gimnasio Deportivo - Azcapotzalco: Registro de Asistentes");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(600, 450);
-        setLocationRelativeTo(null);
+        panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+
+        // Título
+        JLabel lblTitulo = new JLabel("REGISTRO DE NUEVO ASISTENTE", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 16));
+        panel.add(lblTitulo, BorderLayout.NORTH);
 
         // Panel principal con GridBagLayout
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        JPanel pnlPrincipal = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Componentes
+        // Configuración de campos
         JLabel lblNombre = new JLabel("Nombre:");
-        txtNombre = new JTextField(20);
-        
+        txtNombre = new JTextField();
+        txtNombre.setPreferredSize(new Dimension(250, 25));
+
         JLabel lblPrimerApellido = new JLabel("Primer Apellido:");
-        txtPrimerApellido = new JTextField(20);
-        
+        txtPrimerApellido = new JTextField();
+        txtPrimerApellido.setPreferredSize(new Dimension(250, 25));
+
         JLabel lblSegundoApellido = new JLabel("Segundo Apellido:");
-        txtSegundoApellido = new JTextField(20);
-        
+        txtSegundoApellido = new JTextField();
+        txtSegundoApellido.setPreferredSize(new Dimension(250, 25));
+
         JLabel lblEdad = new JLabel("Edad:");
-        txtEdad = new JTextField(5);
-        
+        txtEdad = new JTextField();
+        txtEdad.setPreferredSize(new Dimension(50, 25));
+        ((AbstractDocument)txtEdad.getDocument()).setDocumentFilter(new NumericFilter());
+
         JLabel lblGenero = new JLabel("Género:");
         cmbGenero = new JComboBox<>(new String[]{"Masculino", "Femenino", "Otro"});
-        
-        JLabel lblDireccion = new JLabel("Dirección:");
-        txtDireccion = new JTextField(25);
-        
-        JLabel lblTelefono = new JLabel("Teléfono:");
-        txtTelefono = new JTextField(15);
-        
-        JLabel lblTelefonoEmergencia = new JLabel("Teléfono Emergencia:");
-        txtTelefonoEmergencia = new JTextField(15);
+        cmbGenero.setPreferredSize(new Dimension(250, 25));
 
-        // Posicionamiento
+        JLabel lblDireccion = new JLabel("Dirección:");
+        txtDireccion = new JTextField();
+        txtDireccion.setPreferredSize(new Dimension(250, 25));
+
+        JLabel lblTelefono = new JLabel("Teléfono:");
+        txtTelefono = new JTextField();
+        txtTelefono.setPreferredSize(new Dimension(150, 25));
+
+        JLabel lblTelefonoEmergencia = new JLabel("Teléfono Emergencia:");
+        txtTelefonoEmergencia = new JTextField();
+        txtTelefonoEmergencia.setPreferredSize(new Dimension(150, 25));
+
+        // Posicionamiento de componentes
         gbc.gridx = 0; gbc.gridy = 0;
-        panel.add(lblNombre, gbc);
+        pnlPrincipal.add(lblNombre, gbc);
         gbc.gridx = 1;
-        panel.add(txtNombre, gbc);
+        pnlPrincipal.add(txtNombre, gbc);
 
         gbc.gridx = 0; gbc.gridy = 1;
-        panel.add(lblPrimerApellido, gbc);
+        pnlPrincipal.add(lblPrimerApellido, gbc);
         gbc.gridx = 1;
-        panel.add(txtPrimerApellido, gbc);
+        pnlPrincipal.add(txtPrimerApellido, gbc);
 
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(lblSegundoApellido, gbc);
+        pnlPrincipal.add(lblSegundoApellido, gbc);
         gbc.gridx = 1;
-        panel.add(txtSegundoApellido, gbc);
+        pnlPrincipal.add(txtSegundoApellido, gbc);
 
         gbc.gridx = 0; gbc.gridy = 3;
-        panel.add(lblEdad, gbc);
+        pnlPrincipal.add(lblEdad, gbc);
         gbc.gridx = 1;
-        panel.add(txtEdad, gbc);
+        pnlPrincipal.add(txtEdad, gbc);
 
         gbc.gridx = 0; gbc.gridy = 4;
-        panel.add(lblGenero, gbc);
+        pnlPrincipal.add(lblGenero, gbc);
         gbc.gridx = 1;
-        panel.add(cmbGenero, gbc);
+        pnlPrincipal.add(cmbGenero, gbc);
 
         gbc.gridx = 0; gbc.gridy = 5;
-        panel.add(lblDireccion, gbc);
+        pnlPrincipal.add(lblDireccion, gbc);
         gbc.gridx = 1;
-        panel.add(txtDireccion, gbc);
+        pnlPrincipal.add(txtDireccion, gbc);
 
         gbc.gridx = 0; gbc.gridy = 6;
-        panel.add(lblTelefono, gbc);
+        pnlPrincipal.add(lblTelefono, gbc);
         gbc.gridx = 1;
-        panel.add(txtTelefono, gbc);
+        pnlPrincipal.add(txtTelefono, gbc);
 
         gbc.gridx = 0; gbc.gridy = 7;
-        panel.add(lblTelefonoEmergencia, gbc);
+        pnlPrincipal.add(lblTelefonoEmergencia, gbc);
         gbc.gridx = 1;
-        panel.add(txtTelefonoEmergencia, gbc);
+        pnlPrincipal.add(txtTelefonoEmergencia, gbc);
+
+        panel.add(pnlPrincipal, BorderLayout.CENTER);
 
         // Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel pnlBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         btnGuardar = new JButton("Guardar");
-        btnLimpiar = new JButton("Limpiar");
-        btnCancelar = new JButton("Cancelar");
-        
-        panelBotones.add(btnGuardar);
-        panelBotones.add(btnLimpiar);
-        panelBotones.add(btnCancelar);
-
-        gbc.gridx = 0; gbc.gridy = 8;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.CENTER;
-        panel.add(panelBotones, gbc);
-
-        // Listeners
+        btnGuardar.setPreferredSize(new Dimension(100, 30));
+        btnGuardar.setFont(new Font("Tahoma", Font.BOLD, 12));
         btnGuardar.addActionListener(this::guardarAsistente);
+        
+        btnLimpiar = new JButton("Limpiar");
+        btnLimpiar.setPreferredSize(new Dimension(100, 30));
+        btnLimpiar.setFont(new Font("Tahoma", Font.PLAIN, 12));
         btnLimpiar.addActionListener(e -> limpiarFormulario());
-        btnCancelar.addActionListener(e -> dispose());
+        
+        btnCancelar = new JButton("Cancelar");
+        btnCancelar.setPreferredSize(new Dimension(100, 30));
+        btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        btnCancelar.addActionListener(e -> MainContainer.getInstance().showMainMenu());
+        
+        pnlBotones.add(btnGuardar);
+        pnlBotones.add(btnLimpiar);
+        pnlBotones.add(btnCancelar);
 
-        add(panel);
+        panel.add(pnlBotones, BorderLayout.SOUTH);
     }
 
     private void guardarAsistente(ActionEvent evt) {
         try {
+            // Validar campos obligatorios
+            if (txtNombre.getText().trim().isEmpty() || txtPrimerApellido.getText().trim().isEmpty() || 
+                txtEdad.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(panel, 
+                    "Nombre, apellido y edad son campos obligatorios", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Registrar asistente
             boolean exito = ctrlAsistentes.registrarAsistente(
-                txtNombre.getText(),
-                txtPrimerApellido.getText(),
-                txtSegundoApellido.getText(),
-                Integer.parseInt(txtEdad.getText()),
+                txtNombre.getText().trim(),
+                txtPrimerApellido.getText().trim(),
+                txtSegundoApellido.getText().trim(),
+                Integer.parseInt(txtEdad.getText().trim()),
                 cmbGenero.getSelectedItem().toString(),
-                txtDireccion.getText(),
-                txtTelefono.getText(),
-                txtTelefonoEmergencia.getText()
+                txtDireccion.getText().trim(),
+                txtTelefono.getText().trim(),
+                txtTelefonoEmergencia.getText().trim()
             );
 
             if (exito) {
                 // Persistir datos
                 ControladorPersistencia persistencia = new ControladorPersistencia();
                 if (persistencia.guardarDatos(ControladorPrincipal.getInstance().getGimnasio())) {
-                    JOptionPane.showMessageDialog(this, 
-                        "Asistente registrado y datos guardados", 
+                    JOptionPane.showMessageDialog(panel,
+                        "Asistente registrado exitosamente",
                         "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     limpiarFormulario();
                 } else {
-                    JOptionPane.showMessageDialog(this,
-                        "Asistente registrado pero error al guardar en disco",
+                    JOptionPane.showMessageDialog(panel,
+                        "Asistente registrado pero error al guardar datos",
                         "Advertencia", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(this,
+                JOptionPane.showMessageDialog(panel,
                     "Error al registrar asistente",
                     "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
+            JOptionPane.showMessageDialog(panel,
                 "La edad debe ser un número válido",
                 "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -176,5 +204,24 @@ public class RegistroAsistentesView extends JFrame {
         txtDireccion.setText("");
         txtTelefono.setText("");
         txtTelefonoEmergencia.setText("");
+    }
+
+    // Filtro para solo permitir números en el campo de edad
+    private class NumericFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) 
+            throws BadLocationException {
+            if (string.matches("\\d*")) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) 
+            throws BadLocationException {
+            if (text.matches("\\d*")) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
     }
 }
