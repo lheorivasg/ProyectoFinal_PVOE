@@ -6,14 +6,16 @@
 package controlador;
 
 import modelo.Gimnasio;
+import modelo.Usuario;
 
 public class ControladorPrincipal {
-
     private Gimnasio gimnasio;
     private static ControladorPrincipal instance;
+    private ControladorPersistencia ctrlPersistencia;
 
     private ControladorPrincipal() {
-        this.gimnasio = new Gimnasio();
+        this.ctrlPersistencia = new ControladorPersistencia();
+        this.gimnasio = ctrlPersistencia.cargarDatos();
     }
 
     public static ControladorPrincipal getInstance() {
@@ -28,7 +30,7 @@ public class ControladorPrincipal {
     }
 
     public String obtenerNombreUsuario(String username) {
-        for (modelo.Usuario usuario : gimnasio.getUsuarios()) {
+        for (Usuario usuario : gimnasio.getUsuarios()) {
             if (usuario.getUsername().equals(username)) {
                 return usuario.getNombreCompleto();
             }
@@ -40,7 +42,7 @@ public class ControladorPrincipal {
         return gimnasio;
     }
 
-    public void setGimnasio(Gimnasio gimnasio) {
-        this.gimnasio = gimnasio;
+    public boolean guardarDatos() {
+        return ctrlPersistencia.guardarDatos(gimnasio);
     }
 }

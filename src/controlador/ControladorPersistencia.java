@@ -13,16 +13,12 @@ import java.io.ObjectOutputStream;
 import modelo.Gimnasio;
 
 public class ControladorPersistencia {
-
     private static final String ARCHIVO_DATOS = "gimnasio.dat";
 
     public boolean guardarDatos(Gimnasio gimnasio) {
-        try {
-            FileOutputStream fos = new FileOutputStream(ARCHIVO_DATOS);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
+        try (FileOutputStream fos = new FileOutputStream(ARCHIVO_DATOS);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(gimnasio);
-            oos.close();
-            fos.close();
             return true;
         } catch (IOException e) {
             System.err.println("Error al guardar los datos: " + e.getMessage());
@@ -31,13 +27,9 @@ public class ControladorPersistencia {
     }
 
     public Gimnasio cargarDatos() {
-        try {
-            FileInputStream fis = new FileInputStream(ARCHIVO_DATOS);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            Gimnasio gimnasio = (Gimnasio) ois.readObject();
-            ois.close();
-            fis.close();
-            return gimnasio;
+        try (FileInputStream fis = new FileInputStream(ARCHIVO_DATOS);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
+            return (Gimnasio) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error al cargar los datos. Se creará un nuevo sistema. " + e.getMessage());
             return new Gimnasio();

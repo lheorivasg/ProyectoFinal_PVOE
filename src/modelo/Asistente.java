@@ -144,4 +144,8 @@ public class Asistente implements Serializable {
         }
         return total;
     }
+    
+    
+    
+    
 }

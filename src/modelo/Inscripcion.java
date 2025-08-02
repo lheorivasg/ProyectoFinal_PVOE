@@ -90,4 +90,6 @@ public class Inscripcion implements Serializable {
     public double getCostoTotal() {
         return costoActividad + (equipoAdquirido ? costoEquipo : 0);
     }
+    
+    
 }

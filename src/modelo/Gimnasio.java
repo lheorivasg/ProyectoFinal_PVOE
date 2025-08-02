@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Gimnasio implements Serializable {
-
     private List<Asistente> asistentes;
     private List<Actividad> actividades;
     private List<Usuario> usuarios;
@@ -23,17 +22,15 @@ public class Gimnasio implements Serializable {
     }
 
     private void inicializarDatosPrueba() {
-        // Actividades de prueba
-        actividades.add(new Actividad("ACT001", "Acondicionamiento físico", "Lunes y Miércoles 8:00-9:00", "Juan Pérez", 500.00, 200.00, 20));
-        actividades.add(new Actividad("ACT002", "Gimnasia Olímpica", "Martes y Jueves 16:00-17:30", "María García", 600.00, 350.00, 15));
-        actividades.add(new Actividad("ACT003", "Taekwondo", "Lunes, Miércoles y Viernes 18:00-19:00", "Carlos López", 550.00, 300.00, 25));
-
-        // Usuarios de prueba
-        usuarios.add(new Usuario("admin", "admin123", "Administrador Principal", "admin"));
-        usuarios.add(new Usuario("encargado1", "encargado123", "Encargado de Turno", "encargado"));
+        // Solo actividades de prueba, los usuarios se cargan desde archivo
+        actividades.add(new Actividad("ACT001", "Acondicionamiento físico", 
+                "Lunes y Miércoles 8:00-9:00", "Juan Pérez", 500.00, 200.00, 20));
+        actividades.add(new Actividad("ACT002", "Gimnasia Olímpica", 
+                "Martes y Jueves 16:00-17:30", "María García", 600.00, 350.00, 15));
+        actividades.add(new Actividad("ACT003", "Taekwondo", 
+                "Lunes, Miércoles y Viernes 18:00-19:00", "Carlos López", 550.00, 300.00, 25));
     }
 
-    // Getters
     public List<Asistente> getAsistentes() {
         return asistentes;
     }
@@ -46,7 +43,6 @@ public class Gimnasio implements Serializable {
         return usuarios;
     }
 
-    // Métodos para gestión
     public boolean agregarAsistente(Asistente asistente) {
         if (asistente != null && !existeAsistente(asistente.getId())) {
             asistentes.add(asistente);

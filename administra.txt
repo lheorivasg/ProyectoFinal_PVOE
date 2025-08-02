@@ -1,0 +1,2 @@
+admin,admin123,Administrador Principal,admin
+encargado1,encargado123,Encargado de Turno,encargado
